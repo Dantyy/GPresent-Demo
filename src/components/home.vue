@@ -49,6 +49,9 @@
           </el-col>
           <el-col :span="6">
             <!-- 愿望清单 -->
+            <el-button @click="pushGoodlist" type="danger" plain style="margin-top: 15px;">
+              商品页
+            </el-button>
             <el-button @click="pushWishlist" type="danger" plain style="margin-top: 15px" round>
               <i class="el-icon-present" style=""></i>
               愿望清单

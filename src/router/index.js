@@ -10,8 +10,9 @@ import Gv from '../components/gv.vue'
 Vue.use(Router)
 
 const router = new Router({
+  mode: 'history',
   routes: [
-    // { path: '/login', component: Login },
+    { path: '/', redirect: '/home' },
     { path: '/home', component: Home },
     { path: '/goodlist', component: Goodlist },
     { path: '/shopcar', component: Shopcar },
