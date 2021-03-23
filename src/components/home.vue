@@ -39,7 +39,7 @@
           <el-col :span="4">
             <h1>GPresent</h1>
             <!-- 页面logo -->
-            <img src="../assets/logo.png" alt="" class="logo" />
+            <img src="../assets/img/logo.png" alt="" class="logo" />
           </el-col>
           <el-col :span="12">
             <!-- 搜索框 -->
@@ -264,58 +264,98 @@ export default {
         username: 'admin',
         password: '123456'
       },
-      // 这是表单的验证规则对象
-      loginFormRules: {
-        // 验证用户名是否合法
-        username: [
-          { required: true, message: '请输入登录名称', trigger: 'blur' },
-          { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
-        ],
-        // 验证密码是否合法
-        password: [
-          { required: true, message: '请输入登录密码', trigger: 'blur' },
-          { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
-        ]
-      }
+      loginFormRules: {},
+      loginSuccess: false
+      // // 这是表单的验证规则对象
+      // loginFormRules: {
+      //   // 验证用户名是否合法
+      //   username: [
+      //     { required: true, message: '请输入登录名称', trigger: 'blur' },
+      //     { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }
+      //   ],
+      //   // 验证密码是否合法
+      //   password: [
+      //     { required: true, message: '请输入登录密码', trigger: 'blur' },
+      //     { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }
+      //   ]
+      // }
     }
   },
   created() {},
   methods: {
+    // login() {
+    //   this.$refs.loginFormRef.validate(async valid => {
+    //     console.log(window.sessionStorage.token)
+    //     if (!valid) return
+    //     const { data: res } = await this.$http.post('login', this.loginForm)
+    //     console.log(res)
+    //     if (res.meta.status !== 200) return this.$message.error('登录失败！')
+    //     this.$message.success('登录成功')
+    //     // 1. 将登录成功之后的 token，保存到客户端的 sessionStorage 中
+    //     //   1.1 项目中出了登录之外的其他API接口，必须在登录之后才能访问
+    //     //   1.2 token 只应在当前网站打开期间生效，所以将 token 保存在 sessionStorage 中
+    //     window.sessionStorage.setItem('token', res.data.token)
+    //     this.tokenStr = window.sessionStorage.token
+    //     this.showLoginBtn = false
+    //     this.loginDialogVisible = false
+    //   })
+    // },
+    // login() {
+    //   this.$refs.loginFormRef.validate(valid => {
+    //     if (!valid) return
+    //     if (this.loginForm.username === 'admin' && this.loginForm.password === '123456') {
+    //       this.$message.success('登录成功')
+    //       this.tokenStr = 'admin'
+    //       this.showLoginBtn = false
+    //       this.loginDialogVisible = false
+    //     } else {
+    //       this.$message.error('登录失败')
+    //     }
+    //   })
+    // },
     login() {
-      this.$refs.loginFormRef.validate(async valid => {
-        console.log(window.sessionStorage.token)
-        if (!valid) return
-        const { data: res } = await this.$http.post('login', this.loginForm)
-        console.log(res)
-        if (res.meta.status !== 200) return this.$message.error('登录失败！')
+      if (this.loginForm.username === 'admin' && this.loginForm.password === '123456') {
         this.$message.success('登录成功')
-        // 1. 将登录成功之后的 token，保存到客户端的 sessionStorage 中
-        //   1.1 项目中出了登录之外的其他API接口，必须在登录之后才能访问
-        //   1.2 token 只应在当前网站打开期间生效，所以将 token 保存在 sessionStorage 中
-        window.sessionStorage.setItem('token', res.data.token)
-        this.tokenStr = window.sessionStorage.token
+        this.loginSuccess = true
+        this.tokenStr = 'admin'
         this.showLoginBtn = false
         this.loginDialogVisible = false
-      })
+      } else {
+        this.$message.error('登录失败')
+      }
     },
     logout() {
       this.tokenStr = ''
       this.showLoginBtn = true
     },
+    // pushWishlist() {
+    //   if (this.tokenStr === '') {
+    //     this.loginDialogVisible = true
+    //     this.login()
+    //   } else {
+    //     this.$router.push('/wishlist')
+    //   }
+    // },
+    // pushGoodlist() {
+    //   if (this.tokenStr === '') {
+    //     this.loginDialogVisible = true
+    //     this.login()
+    //   } else {
+    //     this.$router.push('/goodlist')
+    //   }
+    // }
     pushWishlist() {
-      if (this.tokenStr === '') {
-        this.loginDialogVisible = true
-        this.login()
-        console.log(this.login.res)
+      if (this.tokenStr === 'admin' && this.loginSuccess === true) {
+        this.$router.push({ path: '/wishlist' })
       } else {
-        this.$router.push('/wishlist')
+        this.loginDialogVisible = true
       }
     },
     pushGoodlist() {
-      if (this.tokenStr === '') {
-        this.loginDialogVisible = true
+      if (this.tokenStr === 'admin' && this.loginSuccess === true) {
+        this.$router.push({ path: '/goodlist' })
       } else {
-        this.$router.push('/goodlist')
+        this.loginDialogVisible = true
       }
     }
   }

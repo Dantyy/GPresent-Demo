@@ -33,7 +33,7 @@
           <el-col :span="4">
             <h1>购物车</h1>
             <!-- 页面logo -->
-            <img src="../assets/logo.png" alt="" class="logo" />
+            <img src="../assets/img/logo.png" alt="" class="logo" />
           </el-col>
           <el-col :span="12">
             <!-- 搜索框 -->

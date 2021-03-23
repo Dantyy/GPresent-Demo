@@ -3,7 +3,7 @@
     <el-container>
       <el-header>
         <div>
-          <img src="../assets/logo.png" alt="" class="logo"/>
+          <img src="../assets/img/logo.png" alt="" class="logo"/>
         </div>
         <div class="btns">
           <!-- 愿望清单 & 邀请页面 -->
@@ -23,7 +23,7 @@
             <div :index="item.goods_id + ''" v-for="item in wishlist" :key="item.goods_id">
               <el-col :span="4" style="margin-top: 20px">
                 <el-card :body-style="{ padding: '0px' }" shadow="hover">
-                  <img src="../assets/img/advice1.png" class="image" />
+                  <img :src="item.goods_pics" class="image" />
                   <div style="padding: 14px;">
                     <div class="goods-name" v-if="item.goods_name !== undefined && item.goods_name.length > 17">{{ item.goods_name.substr(0, 17) }}...</div>
                     <div class="goods-name" v-else>{{ item.goods_name }}</div>
@@ -43,45 +43,45 @@
 </template>
 
 <script>
+import _data from './datalist.js'
 export default {
   data() {
     return {
       // 产品的查询参数对象
-      goodQueryInfo: {
-        query: '',
-        pagenum: 1,
-        pagesize: 24
-      },
-      wishlistQueryInfo: {
-        query: '',
-        pagenum: 1,
-        pagesize: 10
-      },
-      goodlist: [],
-      wishlist: []
+      // goodQueryInfo: {
+      //   query: '',
+      //   pagenum: 1,
+      //   pagesize: 24
+      // },
+      // wishlistQueryInfo: {
+      //   query: '',
+      //   pagenum: 1,
+      //   pagesize: 10
+      // },
+      wishlist: _data.wishlist
     }
   },
   created() {
-    this.getWishlist()
+    // this.getWishlist()
   },
   methods: {
-    async getWishlist() {
-      const { data: res } = await this.$http.get('goods', {
-        params: this.goodQueryInfo
-      })
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取商品参数失败')
-      };
-      this.goodlist = res.data.goods
+    // async getWishlist() {
+    //   const { data: res } = await this.$http.get('goods', {
+    //     params: this.goodQueryInfo
+    //   })
+    //   if (res.meta.status !== 200) {
+    //     return this.$message.error('获取商品参数失败')
+    //   };
+    //   this.goodlist = res.data.goods
 
-      for (var item in this.goodlist) {
-        if (this.goodlist.[item].goods_state === 1) {
-          this.wishlist.push(this.goodlist.[item])
-          this.total = this.wishlist.length
-        }
-      }
-      console.log(this.wishlist)
-    },
+    //   for (var item in this.goodlist) {
+    //     if (this.goodlist.[item].goods_state === 1) {
+    //       this.wishlist.push(this.goodlist.[item])
+    //       this.total = this.wishlist.length
+    //     }
+    //   }
+    //   console.log(this.wishlist)
+    // },
     pushWishlist() {
       this.$router.push('/wishlist')
     },

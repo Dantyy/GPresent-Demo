@@ -33,7 +33,7 @@
           <el-col :span="4">
             <h1>GPresent</h1>
             <!-- 页面logo -->
-            <img src="../assets/logo.png" alt="" class="logo" />
+            <img src="../assets/img/logo.png" alt="" class="logo" />
           </el-col>
           <el-col :span="12">
             <!-- 搜索框 -->
@@ -71,20 +71,20 @@
         <!-- 产品展示 -->
         <div class="goods w">
           <el-row :gutter="20">
-            <div :index="item.goods_id + ''" v-for="item in goodlist" :key="item.goods_id">
+            <div :index="item.goods_id + ''" v-for="item in cat_goodlist" :key="item.goods_id">
               <el-col :span="4" style="margin-top: 20px">
                 <el-card :body-style="{ padding: '0px' }" shadow="hover">
-                  <img src="../assets/img/advice1.png" class="image" />
+                  <img :src="item.goods_pics" class="image" />
                   <div style="padding: 14px;">
                     <div class="goods-name" v-if="item.goods_name !== undefined && item.goods_name.length > 17">{{ item.goods_name.substr(0, 17) }}...</div>
                     <div class="goods-name" v-else>{{ item.goods_name }}</div>
                     <div style="text-align:right; margin-bottom: 5px">¥ {{ item.goods_price }}</div>
-                      <el-button v-if="item.goods_state == 1" @click="removeFromWishlist(item)" size="mini" type="danger" style="float: right; margin-bottom: 14px">
-                        - 移出清单
-                      </el-button>
-                      <el-button v-else @click="addToWishlist(item)" size="mini" type="danger" plain style="float: right; margin-bottom: 14px">
-                        + 愿望清单
-                      </el-button>
+                    <el-button v-if="item.goods_state == 1" @click="removeFromWishlist(item)" size="mini" type="danger" style="float: right; margin-bottom: 14px">
+                      - 移出清单
+                    </el-button>
+                    <el-button v-else @click="addToWishlist(item)" size="mini" type="danger" plain style="float: right; margin-bottom: 14px">
+                      + 愿望清单
+                    </el-button>
                   </div>
                 </el-card>
               </el-col>
@@ -92,71 +92,65 @@
           </el-row>
         </div>
         <!-- 分页区域 -->
-        <el-pagination @current-change="handleCurrentChange" background layout="prev, pager, next" :total="total" style="text-align: center; margin-bottom: 30px;"> </el-pagination>
+        <!-- <el-pagination @current-change="handleCurrentChange" @size-change="handleSizeChange" background layout="prev, pager, next" :total="total" style="text-align: center; margin-bottom: 30px;"> </el-pagination> -->
       </el-main>
     </el-container>
   </div>
 </template>
 
 <script>
+import _data from '../components/datalist.js'
 export default {
   data() {
     return {
-      // 类别的查询参数对象
-      cateQueryInfo: {
-        type: 1,
-        pagenum: 1,
-        pagesize: 15
-      },
+      // // 类别的查询参数对象
+      // cateQueryInfo: {
+      //   type: 1,
+      //   pagenum: 1,
+      //   pagesize: 15
+      // },
       // 产品的查询参数对象
       goodQueryInfo: {
-        query: '',
         pagenum: 1,
-        pagesize: 24
+        pagesize: 18
       },
-      // 商品分类的数据列表，默认为空
-      catelist: [],
-      // 商品的数据列表，默认为空
-      goodlist: [],
-      wishlist: [],
-      activeIndex: '0',
+      // 商品分类的数据列表
+      catelist: _data.catelist,
+      // 商品的数据列表
+      goodlist: _data.goodlist,
+      // 愿望清单的数据列表
+      wishlist: _data.wishlist,
+      // 对应类别的goodlist
+      cat_goodlist: [],
+      activeIndex: '1',
       total: 0
     }
   },
   created() {
-    this.getMenuList()
-    this.getGoodList()
+    this.startPage()
+    // this.getMenuList()
+    // this.getGoodList()
+    // this.handleSelect(Number(this.activeIndex))
   },
   methods: {
-    async getMenuList() {
-      const { data: res } = await this.$http.get('categories', {
-        params: this.cateQueryInfo
-      })
-      if (res.meta.status !== 200) {
-        return this.$message.error('无法获取菜单栏')
+    startPage() {
+      for (var item in this.goodlist) {
+        if (String(this.goodlist[item].cat_id) === '1') {
+          this.cat_goodlist.push(this.goodlist[item])
+        }
       }
-      this.catelist = res.data.result
-      // console.log(this.catelist)
-      this.total = res.data.total * 10
-      // console.log(this.total)
-      // console.log(this.catelist.[0].cat_name)
+      // console.log(this.cat_goodlist)
     },
-    async getGoodList() {
-      const { data: res } = await this.$http.get('goods', {
-        params: this.goodQueryInfo
-      })
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取商品参数失败')
+    handleSelect(key) {
+      // 先清空产品列表
+      this.cat_goodlist = []
+      // 使用for循环把当前分类id的goodlist set进cat_goodlist里面
+      for (var item in this.goodlist) {
+        if (String(this.goodlist[item].cat_id) === key) {
+          this.cat_goodlist.push(this.goodlist[item])
+        }
       }
-      this.goodlist = res.data.goods
-      console.log(this.goodlist)
-    },
-    handleSelect(key, keyPath) {
-      console.log(key, keyPath)
-    },
-    handleCurrentChange(newPage) {
-      this.goodQueryInfo.pagenum = newPage
-      this.getGoodList()
+      console.log(this.cat_goodlist)
     },
     pushWishlist() {
       this.$router.push('/wishlist')
@@ -166,28 +160,15 @@ export default {
     },
     // 加入愿望清单
     async addToWishlist(item) {
-      // 更新商品状态, 状态为1代表已加入愿望清单
-      const { data: res } = await this.$http.put(`goods/${item.goods_id}/state/1`)
-      if (res.meta.status !== 200) {
-        console.log(res.meta)
-        return this.$message.error('加入愿望清单失败！')
-      }
-
-      this.$message.success('添加成功')
-      // console.log(res)
       item.goods_state = 1
+      this.wishlist.push(item)
+      this.$message.success('添加成功')
     },
     // 移出愿望清单
     async removeFromWishlist(item) {
-      // 更新商品状态, 状态为0代表商品移出愿望清单
-      const { data: res } = await this.$http.put(`goods/${item.goods_id}/state/0`)
-      if (res.meta.status !== 200) {
-        console.log(res.meta)
-        return this.$message.error('移出愿望清单失败！')
-      }
-      this.$message.success('移出成功')
-      console.log(res)
       item.goods_state = 0
+      this.wishlist.pop(item)
+      this.$message.success('移出成功')
     },
     logout() {
       this.$router.push('/home')

@@ -32,7 +32,7 @@
           <el-col :span="4">
             <h1>愿望清单</h1>
             <!-- 页面logo -->
-            <img src="../assets/logo.png" alt="" class="logo" />
+            <img src="../assets/img/logo.png" alt="" class="logo" />
           </el-col>
           <el-col :span="12">
             <!-- 搜索框 -->
@@ -59,7 +59,7 @@
           <el-table-column prop="goods_price" label="价格（元）" width="250"> </el-table-column>
           <el-table-column label="操作" width="250">
             <template slot-scope="scoped">
-              <el-button @click="delWishlist(scoped.row)" size="mini" type="danger" round plain style="text-align: center;"> 删除 </el-button>
+              <el-button @click="delWishlist(scoped)" size="mini" type="danger" round plain style="text-align: center;"> 删除 </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -69,6 +69,7 @@
 </template>
 
 <script>
+import _data from './datalist.js'
 export default {
   data() {
     return {
@@ -83,8 +84,8 @@ export default {
         pagenum: 10,
         pagesize: 100
       },
-      goodlist: [],
-      wishlist: [],
+      goodlist: _data.goodlist,
+      wishlist: _data.wishlist,
       total: 1,
       // 商品数量
       num: 0
@@ -92,24 +93,12 @@ export default {
   },
   created() {
     // this.getGoodList()
-    this.getWishlist()
+    // this.getWishlist()
   },
   methods: {
-    async getWishlist() {
-      const { data: res } = await this.$http.get('goods', {
-        params: this.goodQueryInfo
-      })
-      if (res.meta.status !== 200) {
-        return this.$message.error('获取商品参数失败')
-      };
-      this.goodlist = res.data.goods
-
-      for (var item in this.goodlist) {
-        if (this.goodlist.[item].goods_state === 1) {
-          this.wishlist.push(this.goodlist.[item])
-        }
-      }
-    },
+    // getWishlist() {
+    //   console.log(this.wishlist)
+    // },
     logout() {
       this.$router.push('/home')
     },
@@ -119,18 +108,11 @@ export default {
     pushGV() {
       this.$router.push('/gv')
     },
-    async delWishlist(item) {
-      // goods_state: “0” 时，wishlist产品删除成功
-      const { data: res } = await this.$http.put(`goods/${item.goods_id}/state/0`)
-      if (res.meta.status !== 200) {
-        console.log(res.meta)
-        return this.$message.error('从愿望清单中删除失败！')
-      }
-
-      this.$message.success('删除成功')
-      // console.log(res)
-      item.goods_state = 0
-      this.wishlist.pop(item)
+    delWishlist(item) {
+      // console.log(item.$index)
+      item.row.good_state = 0
+      this.wishlist.splice(item.$index, 1)
+      // console.log(this.wishlist)
     }
   }
 }
