@@ -10,9 +10,8 @@ import Gv from '../components/gv.vue'
 Vue.use(Router)
 
 const router = new Router({
-  mode: 'history',
   routes: [
-    { path: '/', redirect: '/home' },
+    { path: '/#/', redirect: '/home' },
     { path: '/home', component: Home },
     { path: '/goodlist', component: Goodlist },
     { path: '/shopcar', component: Shopcar },
@@ -27,7 +26,6 @@ router.beforeEach((to, from, next) => {
   // from 代表从哪个路径跳转而来
   // next 是一个函数，表示放行
   //     next()  放行    next('/login')  强制跳转
-
   if (to.path === '/home') return next()
   // 获取token
   // const tokenStr = window.sessionStorage.getItem('token')
